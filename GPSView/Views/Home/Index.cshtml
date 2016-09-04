@@ -1,0 +1,44 @@
+﻿@using Jmelosegui.Mvc.GoogleMap;
+@model IEnumerable<GPSView.Models.Locations>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    @functions{
+        DateTime FromUnixTime(long unixTime)
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return epoch.AddMilliseconds(unixTime);
+        }
+    }
+    @{
+        Html.GoogleMap()
+        .Name("map")
+        .Height(600)
+        .Center(c => c.Address("Tyumen, Russia"))
+        .BindTo<GPSView.Models.Locations, Marker>
+        (Model, mappings => mappings.For<GPSView.Models.Locations>
+            (
+                binding => binding.ItemDataBound
+                    (
+                        (marker, location) =>
+                        {
+                            marker.Latitude = location.Latitude;
+                            marker.Longitude = location.Longitude;
+                            marker.Title =
+                            "IMEI: " + location.IMEI + "\n" +
+                            "Name: " + location.Device.Name + "\n" +
+                            "Desc.: " + location.Device.Description + "\n" +
+                            "Date: " + @FromUnixTime((long)location.Time).ToString();
+                        }
+                    )
+            )
+        ).Render();
+    }
+
+</div>
+@section scripts
+{
+    @(Html.GoogleMap().ScriptRegistrar())
+}
