@@ -29,7 +29,7 @@ namespace GPSView.Controllers
                 return BadRequest("Location is not added.");
             }
 
-            return Created("", location);
+            //return Created("", location);
         }
     }
 }
